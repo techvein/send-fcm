@@ -29,7 +29,10 @@ GOOGLE_APPLICATION_CREDENTIALS=./my-project-ffffffff.json ./send-fcm -d -t 'samp
 
 this command generates:
 ```bash
-curl 'https://fcm.googleapis.com/v1/projects/my-project/messages:send'   --header 'Authorization: Bearer 'ya29.c.XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX' --header Content-Type:application/json   -d '{ "message": { "token": "<REGISTRATION-TOKEN>", "notification": { "title": "sample", "body": "hello world"},"android": {"priority": "high"}, "data":{"url": "https://www.tech-vein.com/", "type": ""}}}'
+curl 'https://fcm.googleapis.com/v1/projects/my-project/messages:send' \
+   --header 'Authorization: Bearer 'ya29.c.XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX' \
+   --header Content-Type:application/json \
+   -d '{ "message": { "token": "<REGISTRATION-TOKEN>", "notification": { "title": "sample", "body": "hello world"},"android": {"priority": "high"}, "data":{"url": "https://www.tech-vein.com/", "type": ""}}}'
 ```
 
 # Prerequresites
