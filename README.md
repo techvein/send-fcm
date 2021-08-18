@@ -17,7 +17,19 @@ Environment Variables:
 
 ```
 
-# Prerequresites
-- [jq](https://stedolan.github.io/jq/)
-- [Gcloud command-line tool](https://cloud.google.com/sdk/gcloud)
+# Example:
+## Send hello world to the registartion token "<REGISTRATION-TOKEN>".
+```bash
+GOOGLE_APPLICATION_CREDENTIALS=./my-project-ffffffff.json ./send-fcm -t 'sample' -m 'hello world' -r '<REGISTRATION-TOKEN>' -u 'https://www.tech-vein.com/'
+```
+## You can just generate curl command with dry run (-d) option.
+```bash
+GOOGLE_APPLICATION_CREDENTIALS=./my-project-ffffffff.json ./send-fcm -d -t 'sample' -m 'hello world' -r '<REGISTRATION-TOKEN>' -u 'https://www.tech-vein.com/'
+```
 
+
+# Prerequresites
+- These command-line tools are required.
+  - [jq](https://stedolan.github.io/jq/)
+  - [Gcloud command-line tool](https://cloud.google.com/sdk/gcloud)
+- Please download Service account key JSON file from your GCP project page. And then set the file path to GOOGLE_APPLICATION_CREDENTIALS.
