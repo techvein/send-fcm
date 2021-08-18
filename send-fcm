@@ -1,0 +1,80 @@
+#!/bin/bash
+# Send FCM message.
+# Requirement: jq, gcloud
+#
+# Copyright 2021 tech vein, Inc.
+# https://www.tech-vein.com/
+# 
+# License: BSD License.
+
+set -u
+set -e
+
+showHelp() {
+	appName=$(basename "$0")
+	(
+	echo "Usage: $appName -r 'registration-token' -t 'title' -m 'message' [ -u 'data-url' ] [ -c 'type' ] [-h]"
+	echo "Options:"
+	echo "    -t: Push notification message Title(required)"
+	echo "    -m: Push notification Message body(required)"
+	echo "    -r: Destination Registration token(required)"
+	echo "    -u: Optional Url parameter"
+	echo "    -c: Optional type parameter"
+	echo "    -h: Show this Help."
+	echo "    -d: Dry run mode. Just print curl command without execution."
+	echo ""
+	echo "Environment Variables:"
+	echo "    GOOGLE_APPLICATION_CREDENTIALS: Service account key JSON file. Please download from IAM page on your GCP project page.(required)"
+	) >&2 
+	exit 1
+}
+
+GOOGLE_APPLICATION_CREDENTIALS="${GOOGLE_APPLICATION_CREDENTIALS:-}"
+if [ "$GOOGLE_APPLICATION_CREDENTIALS" = "" -o '!' -s "$GOOGLE_APPLICATION_CREDENTIALS" -o '!' -f "$GOOGLE_APPLICATION_CREDENTIALS" ]; then
+	echo 'Missing or invalid GOOGLE_APPLICATION_CREDENTIALS' >&2
+	showHelp
+fi
+
+projectId=$(cat "$GOOGLE_APPLICATION_CREDENTIALS"  | jq -r .project_id)
+if [ "" = "$projectId" ]; then
+	echo 'Invalid GOOGLE_APPLICATION_CREDENTIALS. The credential must contain project id.' >&2
+	showHelp
+fi
+
+title=""
+message=""
+registrationToken=""
+url=""
+type=""
+dryRun=
+
+while getopts ht:m:r:u:d OPT; do
+case "$OPT" in
+	t) title="$OPTARG" ;;
+	m) message="$OPTARG" ;;
+	r) registrationToken="$OPTARG" ;;
+	u) url="$OPTARG" ;;
+	c) type="$OPTARG" ;;
+	h) showHelp;;
+	d) dryRun=1;;
+esac
+done
+
+if [ "" = "$title" -o "" = "$message" -o "" = "$registrationToken" -o "" = "$projectId" ]; then
+	echo "Missing required options." >&2
+	showHelp
+fi
+
+authHeader=$(gcloud auth application-default print-access-token)
+curlCommand="curl 'https://fcm.googleapis.com/v1/projects/$projectId/messages:send' \
+  --header 'Authorization: Bearer $authHeader' \
+  --header Content-Type:application/json \
+  -d '{ \"message\": { \"token\": \"$registrationToken\", \"notification\": { \"title\": \"$title\", \"body\": \"$message\"},\"android\": {\"priority\": \"high\"}, \"data\":{\"url\": \"$url\", \"type\": \"$type\"}}}'"
+
+if [ "$dryRun" != "" ]; then
+	echo "$curlCommand"
+	exit
+fi
+
+sh -c "$curlCommand"
+
