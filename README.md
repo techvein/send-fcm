@@ -30,6 +30,7 @@ GOOGLE_APPLICATION_CREDENTIALS=./my-project-ffffffff.json ./send-fcm -d -t 'samp
 
 # Prerequresites
 - These command-line tools are required.
+  - [curl](https://curl.se/)
   - [jq](https://stedolan.github.io/jq/)
   - [Gcloud command-line tool](https://cloud.google.com/sdk/gcloud)
 - Please download Service account key JSON file from your GCP project page. And then set the file path to GOOGLE_APPLICATION_CREDENTIALS.
